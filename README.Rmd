@@ -34,7 +34,7 @@ You can install the development version of idrFluent like so:
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(idrFluent)
+# library(idrFluent)
 ## basic example code
 ```
 
