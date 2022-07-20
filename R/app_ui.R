@@ -2,17 +2,20 @@
 #'
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
-#' @import shiny
+#' @import shiny shiny.fluent glue
 #' @noRd
+
+
 app_ui <- function(request) {
+
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
-      h1("idrFluent")
-    )
+      layout(router$ui)
   )
+)
 }
 
 #' Add external Resources to the Application

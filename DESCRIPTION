@@ -4,17 +4,23 @@ Version: 0.0.0.9000
 Authors@R: person('Chenchao', 'Zang', email = 'chenchoa.zang@usrealco.com', role = c('cre', 'aut'))
 Description: PKG_DESC.
 License: MIT + file LICENSE
-Imports: 
-    config (>= 0.3.1),
-    golem (>= 0.3.2),
-    shiny (>= 1.7.1)
+URL: {{ URL }}
+BugReports: {{ BugReports }}
 Encoding: UTF-8
+RoxygenNote: 7.2.0
+Imports: 
+    attempt,
+    dplyr,
+    DT,
+    glue,
+    golem,
+    highcharter,
+    htmltools,
+    leaflet,
+    plotly,
+    shiny,
+    shiny.fluent,
+    shiny.router
+Depends: 
+    R (>= 2.10)
 LazyData: true
-RoxygenNote: 7.1.1
-Suggests: 
-    spelling,
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
-Language: en-US
-URL: https://github.com/RealCoChenchao/idrFluent
-BugReports: https://github.com/RealCoChenchao/idrFluent/issues

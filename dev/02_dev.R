@@ -15,17 +15,32 @@
 
 ## Dependencies ----
 ## Amend DESCRIPTION with dependencies read from package code parsing
+golem::use_recommended_deps()
+usethis::use_package("htmltools")
+usethis::use_package("shiny.fluent")
+usethis::use_package("dplyr")
+usethis::use_package("shiny.router")
+usethis::use_package("glue")
+usethis::use_package("leaflet.extras")
+usethis::use_package("scales")
+usethis::use_package("tidyr")
+usethis::use_package("tibble")
+usethis::use_package("ggplot2")
+usethis::use_package("plotly")
+usethis::use_package("highcharter")
 attachment::att_amend_desc()
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module(name = "name_of_module1", with_test = TRUE) # Name of the module
-golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module
+golem::add_module(name = "dropdown_of_module1", with_test = TRUE) # Name of the module
+golem::add_module(name = "filter_module", with_test = TRUE) # Name of the module
+golem::add_module(name = "simulator_module") # Name of the module
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
-golem::add_fct("helpers", with_test = TRUE)
+golem::add_fct("helpers")
 golem::add_utils("helpers", with_test = TRUE)
+# golem::add_utils("UIformat_helpers")
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
