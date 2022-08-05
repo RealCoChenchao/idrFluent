@@ -31,6 +31,25 @@ mod_simulator_module_ui <- function(id){
         uiOutput(NS(id, "f10ui")),
         uiOutput(NS(id, "f11ui")),
         uiOutput(NS(id, "f12ui")),
+      ),
+      Stack(
+        tokens = list(childrenGap = 2),
+        uiOutput(NS(id, "f13ui")),
+        uiOutput(NS(id, "f14ui")),
+        uiOutput(NS(id, "f15ui")),
+        uiOutput(NS(id, "f16ui")),
+      ),
+      Stack(
+        tokens = list(childrenGap = 2),
+        uiOutput(NS(id, "f17ui")),
+        uiOutput(NS(id, "f18ui")),
+        uiOutput(NS(id, "f19ui")),
+        uiOutput(NS(id, "f20ui")),
+      ),
+      Stack(
+        tokens = list(childrenGap = 2),
+        uiOutput(NS(id, "f21ui")),
+        uiOutput(NS(id, "f22ui"))
       )
       ),
 
@@ -41,24 +60,12 @@ mod_simulator_module_ui <- function(id){
         makeCard("Panel 1",
                  size = 4,
                  style = "max-width: 800px;",
-                 Stack(
-                   tokens = list(childrenGap = 10),
-                   Dropdown.shinyInput(NS(id, "panel1"),
-                                       placeHolder = "Select a metric",
-                                       options = fund_options),
-                   uiOutput(NS(id, "p1_table"))
-                   )
+                 mod_simulator_panel_module_ui(NS(id, "panel1"))
                  ),
         makeCard("Panel 2",
                  size = 4,
                  style = "max-width: 800px;",
-                 Stack(
-                   tokens = list(childrenGap = 10),
-                   Dropdown.shinyInput(NS(id, "panel2"),
-                                       placeHolder = "Select a metric",
-                                       options = fund_options),
-                   uiOutput(NS(id, "p2_table"))
-                   )
+                 mod_simulator_panel_module_ui(NS(id, "panel2"))
                  )
         ),
       Stack(
@@ -67,24 +74,12 @@ mod_simulator_module_ui <- function(id){
         makeCard("Panel 3",
                  size = 4,
                  style = "max-width: 800px;",
-                 Stack(
-                   tokens = list(childrenGap = 10),
-                   Dropdown.shinyInput(NS(id, "panel3"),
-                                       placeHolder = "Select a metric",
-                                       options = fund_options),
-                   uiOutput(NS(id, "p3_table"))
-                 )
+                 mod_simulator_panel_module_ui(NS(id, "panel3"))
         ),
         makeCard("Panel 4",
                  size = 4,
                  style = "max-width: 800px;",
-                 Stack(
-                   tokens = list(childrenGap = 10),
-                   Dropdown.shinyInput(NS(id, "panel4"),
-                                       placeHolder = "Select a metric",
-                                       options = fund_options),
-                   uiOutput(NS(id, "p4_table"))
-                   )
+                 mod_simulator_panel_module_ui(NS(id, "panel4"))
                  )
         )
       )
@@ -95,87 +90,33 @@ mod_simulator_module_ui <- function(id){
 #' @noRd
 mod_simulator_module_server <- function(id){
   moduleServer( id, function(input, output, session){
-    ns <- session$ns
 
-    output$p1_table <- renderUI({
-      items_list <- DetailsList(items = head(tidy_sf) %>%
-                                  sf::st_drop_geometry(),
-                                columns = details_list_columns)
-      items_list
-    })
-
-    output$p2_table <- renderUI({
-      items_list <- DetailsList(items = head(tidy_sf) %>%
-                                  sf::st_drop_geometry(),
-                                columns = details_list_columns)
-      items_list
-    })
-
-    output$p3_table <- renderUI({
-      items_list <- DetailsList(items = head(tidy_sf) %>%
-                                  sf::st_drop_geometry(),
-                                columns = details_list_columns)
-      items_list
-    })
-
-    output$p4_table <- renderUI({
-      items_list <- DetailsList(items = head(tidy_sf) %>%
-                                  sf::st_drop_geometry(),
-                                columns = details_list_columns)
-      items_list
-    })
-
-    port_weight = reactiveValues(weight=rep(1/12, 12))
+    port_weight <- reactiveValues(weight=rep(100/22, 22))
+    # slider_debounced <- reactiveValues()
+    # slider_debounced <- purrr::map(seq(1, 22, 1),
+    #                                .f = ~{
+    #                                  input_name <- glue("f{.x}")
+    #                                  slider_debounced[[input_name]] <- reactive(input[[input_name]]) %>%
+    #                                    debounce(200)
+    #                                })
 
     # If any of the sliders change, then recalculate other weight weights to satisfy sum to 1 constraint
-    observers <- purrr::map(seq(1, 12, 1),
+    observers <- purrr::map(seq(1, 22, 1),
                             .f = ~{
                               input_name <- glue("f{.x}")
                               observeEvent(input[[input_name]],
                                            {
-                                             suspendMany(observers) #This function comes from shinyhelper.R
-                                             port_weight$weight = updateweight(port_weight$weight, input[[input_name]], .x)
-                                             resumeMany(observers) #This function comes from shinyhelper.R
+                                             suspendMany(observers)
+                                             port_weight$weight = updateweight(port_weight$weight,
+                                                                               input[[input_name]],
+                                                                               .x)
+                                             resumeMany(observers)
                                            }
                               )
                             })
 
-
-      # observeEvent(input$f1,
-      #              {
-      #                suspendMany(observers) #This function comes from shinyhelper.R
-      #                port_weight$weight = updateweight(port_weight$weight, input$f1, 1)
-      #                resumeMany(observers) #This function comes from shinyhelper.R
-      #              }
-      # ),
-      # observeEvent(input$f2,
-      #              {
-      #                suspendMany(observers)
-      #                port_weight$weight = updateweight(port_weight$weight, input$f2, 2)
-      #                resumeMany(observers)
-      #              }
-      # ),
-      # observeEvent(input$f3,
-      #              {
-      #                suspendMany(observers)
-      #                port_weight$weight = updateweight(port_weight$weight, input$f3, 3)
-      #                resumeMany(observers)
-      #              }
-      # )
-
-    # If the weights change, update the sliders
-    # output$f1ui = renderUI({
-    #   wghtsliderInput(NS(id, "f1"), port_weight$weight[1], label = "AEW") #This function comes from shinyhelper.R
-    # })
-    # output$f2ui = renderUI({
-    #   wghtsliderInput(NS(id, "f2"), port_weight$weight[2], label = "Ara")
-    # })
-    # output$f3ui = renderUI({
-    #   wghtsliderInput(NS(id, "f3"), port_weight$weight[3], label = "ASB")
-    # })
-
-    purrr::walk2(seq(1, 12, 1),
-                 purrr::map(fund_options, ~.x$key)[1:12],
+    purrr::walk2(seq(1, 22, 1),
+                 purrr::map(fund_options, ~.x$key)[1:22],
                  .f = ~{
                    output_name <- glue("f{.x}ui")
                    output[[output_name]] <- renderUI({
@@ -185,6 +126,32 @@ mod_simulator_module_server <- function(id){
                                      )
                      })
                    })
+
+    fund_weight <- reactive({
+
+      fund_allocation <-
+        tibble(input_value = port_weight$weight,
+               fund_name = unlist(purrr::map(fund_options, ~.x$key)[1:22]))
+
+      nav_weight <- fund_allocation %>%
+        dplyr::inner_join(cf_fund_level,
+                          by = c("fund_name")) %>%
+        dplyr::filter(input_value != 0) %>%
+        dplyr::mutate(input_weight = input_value * nav) %>%
+        dplyr::select(fund_name, input_weight)
+
+      return(nav_weight)
+    })
+
+    ps_returns <- reactive({comp_return(odce_returns, fund_weight())})
+
+
+    mod_simulator_panel_module_server("panel1", ps_returns)
+    mod_simulator_panel_module_server("panel2", ps_returns)
+    mod_simulator_panel_module_server("panel3", ps_returns)
+    mod_simulator_panel_module_server("panel4", ps_returns)
+
+
   })
 }
 

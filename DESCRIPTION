@@ -7,20 +7,27 @@ License: MIT + file LICENSE
 URL: {{ URL }}
 BugReports: {{ BugReports }}
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Imports: 
     attempt,
     dplyr,
     DT,
+    ggplot2,
     glue,
     golem,
     highcharter,
     htmltools,
     leaflet,
+    leaflet.extras,
     plotly,
+    scales,
     shiny,
     shiny.fluent,
-    shiny.router
+    shiny.router,
+    shinydashboard,
+    stringr,
+    tibble,
+    tidyr
 Depends: 
     R (>= 2.10)
 LazyData: true

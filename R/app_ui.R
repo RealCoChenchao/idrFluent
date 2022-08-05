@@ -3,6 +3,7 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny shiny.fluent glue
+#' @import shinyWidgets
 #' @noRd
 
 
@@ -13,6 +14,7 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
+      useShinydashboard(),
       layout(router$ui)
   )
 )
