@@ -62,23 +62,25 @@ addPortfolioMarkers <- function(map, df, selected_sector, cluster_option){
 }
 
 # dodge plot function for portfolio simulator
-dodge_plot <- function(data,
-                       x_value,
-                       order_by = NULL){
-  plot <- data %>%
-    ggplot2::ggplot(aes(x = fct_reorder({{ x_value }}, {{ order_by }}),
-                        y = value,
-                        fill = fund_name,
-                        label = scales::percent(value, accuracy = 0.1))) +
+ps_dodge_plot <- function(df, x_value, y_value){
+  df %>%
+    ggplot(aes(x = .data[[x_value]],
+               y = .data[[y_value]],
+               fill = fund_name,
+               label = scales::percent(.data[[y_value]], accuracy = 0.1))) +
     geom_bar(position="dodge",stat="identity") +
-    scale_fill_manual(values=c("#12395b", "#a2a4a3")) +
+    scale_fill_manual(values = c("#12395b", "#a2a4a3")) +
     scale_y_continuous(labels = scales::percent) +
     geom_text(position = position_dodge(width = 0.9),
               hjust =.5,
               vjust = -0.5,
               size = 3) +
     labs(x = "", y ="", fill = "") +
-    theme_minimal()
-
-  return(plot)
+    theme_minimal() +
+    theme(axis.text.y =
+            element_text(size = 14,
+                         face = "bold"),
+          axis.text.x =
+            element_text(size = 14,
+                         face = "bold"))
 }

@@ -182,6 +182,14 @@ quarter_options <- list(
   list(key = "2021 Q2", text = "2021 Q2"),
   list(key = "2021 Q3", text = "2021 Q3"))
 
+ps_options <- list(
+  list(key = "net_total", text = "Net Return (Annualized)"),
+  list(key = "gross_total", text = "Gross Return (Annualized)"),
+  list(key = "property_type", text = "Property Type Diversification"),
+  list(key = "total_leverage", text = "Portfolio Leverage"),
+  list(key = "total_std", text = "Standard Deviation"),
+  list(key = "total_te", text = "Tracking Error to ODCE"))
+
 makePage <- function (title, subtitle, contents) {
   tagList(div(
     class = "page-title",

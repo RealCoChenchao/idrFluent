@@ -9,13 +9,14 @@
 #' @importFrom shiny NS tagList
 #' @importFrom stringr str_extract
 #' @importFrom forcats fct_reorder
-mod_simulator_panel_module_ui <- function(id){
+mod_simulator_panel_module_ui <- function(id, selected_val = NULL){
   ns <- NS(id)
   Stack(
     tokens = list(childrenGap = 10),
     Dropdown.shinyInput(NS(id, "panel"),
                         placeHolder = "Select a metric",
-                        options = fund_options),
+                        options = ps_options,
+                        value = selected_val),
     makesimpleCard(plotOutput(NS(id, "plot"),
                               width = 600),
                    size = 8,
@@ -30,9 +31,21 @@ mod_simulator_panel_module_server <- function(id, summary_data){
   moduleServer(id, function(input, output, session){
 
     output$plot <- renderPlot({
-      summary_data() %>%
-        dodge_plot(x_value = vintage_group,
-                   order_by = vintage)
+      if(input$panel == "net_total"){
+        ps_dodge_plot(summary_data()$calc_return, "year", "net_total")
+      } else if(input$panel == "gross_total"){
+        ps_dodge_plot(summary_data()$calc_return, "year", "gross_total")
+      } else if(input$panel == "property_type"){
+        ps_dodge_plot(summary_data()$calc_diversification, "property_type", "total_pct")
+      } else if(input$panel == "total_leverage"){
+        ps_dodge_plot(summary_data()$calc_leverage, "fund_name", "total_leverage")
+      } else if(input$panel == "total_std"){
+        ps_dodge_plot(summary_data()$calc_sdtr, "year", "total_std")
+      } else if(input$panel == "total_te"){
+        ps_dodge_plot(dplyr::filter(summary_data()$calc_sdtr,
+                                    fund_name != "ODCE"),
+                      "year", "total_te")
+      }
     })
 
   })
