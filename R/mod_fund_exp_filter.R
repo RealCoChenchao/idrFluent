@@ -74,38 +74,62 @@ mod_fund_exp_filter_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    output$a_return <- renderInfoBox({
-      infoBox(
-        "A return", paste0(25,"%"), icon = shiny::icon("coins"),
-        color = "aqua", fill = TRUE
+    preped_info_return <- reactive({
+
+      selectedFund <- (
+        if (length(input$fund) > 0) input$fund
+        else c("AEW")
       )
+
+      selectedQuarter <- (
+        if (length(input$fund) > 0) input$fund
+        else c("2022 Q1")
+      )
+
+      tbl(real_estate_db,
+          "radar_odce_total_return") %>%
+        dplyr::select(quarter = period,
+                      fund_name,
+                      net_total_return,
+                      net_income_return,
+                      net_appreciation_return) %>%
+        dplyr::collect() %>%
+        dplyr::filter(quarter == selectedQuarter,
+                      fund_name == selectedFund)
+    })
+
+    output$a_return <- renderInfoBox({
+      returninfoBox("A return",
+                    preped_info_return()$net_appreciation_return)
     })
 
     output$i_return <- renderInfoBox({
-      infoBox(
-        "I return", paste0(25, "%"), icon = shiny::icon("coins"),
-        color = "aqua", fill = TRUE
-      )
+      returninfoBox("I return",
+                    preped_info_return()$net_income_return)
     })
 
     output$t_return <- renderInfoBox({
-      infoBox(
-        "T return", paste0(25, "%"), icon = shiny::icon("coins"),
-        color = "aqua", fill = TRUE
-      )
+      returninfoBox("T return",
+                    preped_info_return()$net_total_return)
     })
 
     output$property <- renderInfoBox({
       infoBox(
-        "Property", paste0(25, "%"), icon = shiny::icon("building"),
-        color = "aqua", fill = TRUE
+        "Property",
+        paste0(25, "%"),
+        icon = shiny::icon("building"),
+        color = "aqua",
+        fill = TRUE
       )
     })
 
     output$investment <- renderInfoBox({
       infoBox(
-        "Investment", paste0(25, "%"), icon = shiny::icon("sack-dollar"),
-        color = "aqua", fill = TRUE
+        "Investment",
+        paste0(25, "%"),
+        icon = shiny::icon("sack-dollar"),
+        color = "aqua",
+        fill = TRUE
       )
     })
 
