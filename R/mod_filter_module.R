@@ -171,8 +171,8 @@ mod_filter_module_server <- function(id){
 
     output$query_map <- renderLeaflet({
       leaflet() %>%
-        addProviderTiles(providers$Stamen.TonerLite,
-                         options = providerTileOptions(noWrap = TRUE)) %>%
+        addProviderTiles("Stamen.Watercolor") %>%
+        addProviderTiles("Stamen.TonerHybrid") %>%
         addPortfolioMarkers(df = filtered_property(),
                             selected_sector = "Office",
                             cluster_option = input$clusterOnly) %>%
