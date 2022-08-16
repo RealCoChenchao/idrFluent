@@ -7,9 +7,11 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
+#' @import shinyWidgets
 mod_simulator_module_ui <- function(id){
   ns <- NS(id)
   div(
+    chooseSliderSkin("Flat", color = "#112446"),
     flowLayout(
       Stack(
         tokens = list(childrenGap = 2),
