@@ -40,7 +40,16 @@ fund_nav <- tbl(real_estate_db,
     fund_level_data == "Net Assets Total",
     quarter == max(quarter, na.rm = TRUE)) %>%
   dplyr::select(fund_name, total_nav = value) %>%
-  dplyr::collect()
+  dplyr::collect() %>%
+  dplyr::bind_rows(
+    tbl(real_estate_db,
+        "odce_returns") %>%
+      dplyr::filter(period == max(period),
+                    fund_name == "ODCE") %>%
+      dplyr::select(fund_name,
+                    total_nav = net_asset_value) %>%
+      dplyr::collect()
+  )
 
 # read the ODCE and all component fund quarterly and historical returns
 fund_return <- tbl(real_estate_db,

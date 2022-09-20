@@ -30,18 +30,23 @@ mod_simulator_panel_module_ui <- function(id, selected_val = NULL){
 mod_simulator_panel_module_server <- function(id, summary_data){
   moduleServer(id, function(input, output, session){
 
+    selectedMetric <- reactive({
+      if (length(input$panel) > 0) input$panel
+      else c("net_total")
+    })
+
     output$plot <- renderPlot({
-      if(input$panel == "net_total"){
+      if(selectedMetric() == "net_total"){
         ps_dodge_plot(summary_data()$calc_return, "year", "net_total")
-      } else if(input$panel == "gross_total"){
+      } else if(selectedMetric() == "gross_total"){
         ps_dodge_plot(summary_data()$calc_return, "year", "gross_total")
-      } else if(input$panel == "property_type"){
+      } else if(selectedMetric() == "property_type"){
         ps_dodge_plot(summary_data()$calc_diversification, "property_type", "total_pct")
-      } else if(input$panel == "total_leverage"){
+      } else if(selectedMetric() == "total_leverage"){
         ps_dodge_plot(summary_data()$calc_leverage, "fund_name", "total_leverage")
-      } else if(input$panel == "total_std"){
+      } else if(selectedMetric() == "total_std"){
         ps_dodge_plot(summary_data()$calc_sdtr, "year", "total_std")
-      } else if(input$panel == "total_te"){
+      } else if(selectedMetric() == "total_te"){
         ps_dodge_plot(dplyr::filter(summary_data()$calc_sdtr,
                                     fund_name != "ODCE"),
                       "year", "total_te")

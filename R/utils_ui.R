@@ -162,6 +162,7 @@ fund_options <- list(
   list(key = "TA Realty", text = "TA Realty"),
   list(key = "UBS", text = "UBS"))
 
+fund_names <- unlist(purrr::map(fund_options, ~.x$key))
 
 sector_options <- list(
   list(key = "Apartment", text = "Apartment"),

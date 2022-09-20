@@ -88,7 +88,7 @@ mod_fund_exp_filter_server <- function(id){
 
       tbl(real_estate_db,
           "radar_odce_total_return") %>%
-        dplyr::select(quarter = period,
+        dplyr::select(quarter,
                       fund_name,
                       net_total_return,
                       net_income_return,

@@ -13,81 +13,49 @@ mod_simulator_module_ui <- function(id){
   div(
     chooseSliderSkin("Flat", color = "#112446"),
     flowLayout(
+      mod_fund_text_ui(NS(id, "box1"), fund_names[1:4]),
+      mod_fund_text_ui(NS(id, "box2"), fund_names[5:8]),
+      mod_fund_text_ui(NS(id, "box3"), fund_names[9:12]),
+      mod_fund_text_ui(NS(id, "box4"), fund_names[13:16]),
+      mod_fund_text_ui(NS(id, "box5"), fund_names[17:20]),
       Stack(
-        tokens = list(childrenGap = 2),
-        uiOutput(NS(id, "f1ui")),
-        uiOutput(NS(id, "f2ui")),
-        uiOutput(NS(id, "f3ui")),
-        uiOutput(NS(id, "f4ui")),
+        tokens = list(childrenGap = 40),
+        mod_fund_text_ui(NS(id, "box6"), c(fund_names[21:22], "ODCE")),
+        PrimaryButton.shinyInput(NS(id, "calc_bt"), text = "Apply Allocation"))
       ),
-      Stack(
-        tokens = list(childrenGap = 2),
-        uiOutput(NS(id, "f5ui")),
-        uiOutput(NS(id, "f6ui")),
-        uiOutput(NS(id, "f7ui")),
-        uiOutput(NS(id, "f8ui")),
+    div(style = "height:20px"),
+    Stack(
+      tokens = list(childrenGap = 10),
+      horizontal = TRUE,
+      makeCard("Panel 1",
+               size = 4,
+               style = "max-width: 800px;",
+               mod_simulator_panel_module_ui(NS(id, "panel1"),
+                                             selected_val = "net_total")
+               ),
+      makeCard("Panel 2",
+               size = 4,
+               style = "max-width: 800px;",
+               mod_simulator_panel_module_ui(NS(id, "panel2"),
+                                             selected_val = "gross_total")
+               )
       ),
-      Stack(
-        tokens = list(childrenGap = 2),
-        uiOutput(NS(id, "f9ui")),
-        uiOutput(NS(id, "f10ui")),
-        uiOutput(NS(id, "f11ui")),
-        uiOutput(NS(id, "f12ui")),
+    Stack(
+      tokens = list(childrenGap = 10),
+      horizontal = TRUE,
+      makeCard("Panel 3",
+               size = 4,
+               style = "max-width: 800px;",
+               mod_simulator_panel_module_ui(NS(id, "panel3"),
+                                             selected_val = "property_type")
       ),
-      Stack(
-        tokens = list(childrenGap = 2),
-        uiOutput(NS(id, "f13ui")),
-        uiOutput(NS(id, "f14ui")),
-        uiOutput(NS(id, "f15ui")),
-        uiOutput(NS(id, "f16ui")),
-      ),
-      Stack(
-        tokens = list(childrenGap = 2),
-        uiOutput(NS(id, "f17ui")),
-        uiOutput(NS(id, "f18ui")),
-        uiOutput(NS(id, "f19ui")),
-        uiOutput(NS(id, "f20ui")),
-      ),
-      Stack(
-        tokens = list(childrenGap = 2),
-        uiOutput(NS(id, "f21ui")),
-        uiOutput(NS(id, "f22ui"))
+      makeCard("Panel 4",
+               size = 4,
+               style = "max-width: 800px;",
+               mod_simulator_panel_module_ui(NS(id, "panel4"),
+                                             selected_val = "total_leverage")
+               )
       )
-      ),
-
-
-      Stack(
-        tokens = list(childrenGap = 10),
-        horizontal = TRUE,
-        makeCard("Panel 1",
-                 size = 4,
-                 style = "max-width: 800px;",
-                 mod_simulator_panel_module_ui(NS(id, "panel1"),
-                                               selected_val = "net_total")
-                 ),
-        makeCard("Panel 2",
-                 size = 4,
-                 style = "max-width: 800px;",
-                 mod_simulator_panel_module_ui(NS(id, "panel2"),
-                                               selected_val = "gross_total")
-                 )
-        ),
-      Stack(
-        tokens = list(childrenGap = 10),
-        horizontal = TRUE,
-        makeCard("Panel 3",
-                 size = 4,
-                 style = "max-width: 800px;",
-                 mod_simulator_panel_module_ui(NS(id, "panel3"),
-                                               selected_val = "property_type")
-        ),
-        makeCard("Panel 4",
-                 size = 4,
-                 style = "max-width: 800px;",
-                 mod_simulator_panel_module_ui(NS(id, "panel4"),
-                                               selected_val = "total_leverage")
-                 )
-        )
       )
 }
 
@@ -97,57 +65,27 @@ mod_simulator_module_ui <- function(id){
 mod_simulator_module_server <- function(id){
   moduleServer( id, function(input, output, session){
 
-    port_weight <- reactiveValues(weight=rep(100/22, 22))
-    # slider_debounced <- reactiveValues()
-    # slider_debounced <- purrr::map(seq(1, 22, 1),
-    #                                .f = ~{
-    #                                  input_name <- glue("f{.x}")
-    #                                  slider_debounced[[input_name]] <- reactive(input[[input_name]]) %>%
-    #                                    debounce(200)
-    #                                })
-
-    # If any of the sliders change, then recalculate other weight weights to satisfy sum to 1 constraint
-    observers <- purrr::map(seq(1, 22, 1),
-                            .f = ~{
-                              input_name <- glue("f{.x}")
-                              observeEvent(input[[input_name]],
-                                           {
-                                             suspendMany(observers)
-                                             port_weight$weight = updateweight(port_weight$weight,
-                                                                               input[[input_name]],
-                                                                               .x)
-                                             resumeMany(observers)
-                                           }
-                              )
-                            })
-
-    purrr::walk2(seq(1, 22, 1),
-                 purrr::map(fund_options, ~.x$key)[1:22],
-                 .f = ~{
-                   output_name <- glue("f{.x}ui")
-                   output[[output_name]] <- renderUI({
-                     wghtsliderInput(NS(id, glue("f{.x}")),
-                                     port_weight$weight[.x],
-                                     label = .y
-                                     )
-                     })
-                   })
-
     fund_weight <- reactive({
 
       fund_allocation <-
-        tibble(input_value = port_weight$weight,
-               fund_name = unlist(purrr::map(fund_options, ~.x$key)[1:22]))
+        dplyr::bind_rows(
+          mod_fund_text_server("box1", fund_names[1:4])(),
+          mod_fund_text_server("box2", fund_names[5:8])(),
+          mod_fund_text_server("box3", fund_names[9:12])(),
+          mod_fund_text_server("box4", fund_names[13:16])(),
+          mod_fund_text_server("box5", fund_names[17:20])(),
+          mod_fund_text_server("box6", c(fund_names[21:22], "ODCE"))()
+        ) %>%
+        dplyr::mutate(input_value = as.numeric(input_value),
+                      rebal_value = input_value/sum(input_value, na.rm = TRUE))
 
-      nav_weight <- fund_allocation %>%
+      fund_allocation %>%
         dplyr::inner_join(fund_nav,
                           by = c("fund_name")) %>%
-        dplyr::filter(input_value != 0) %>%
-        dplyr::mutate(input_weight = input_value * total_nav) %>%
+        dplyr::filter(rebal_value != 0) %>%
+        dplyr::mutate(input_weight = rebal_value * total_nav) %>%
         dplyr::select(fund_name, input_weight,
-                      total_nav, input_value)
-
-      return(nav_weight)
+                      total_nav, rebal_value)
     })
 
     ps_metrics <- reactive({
@@ -171,7 +109,7 @@ mod_simulator_module_server <- function(id){
              calc_leverage = calc_leverage,
              calc_sdtr = calc_sdtr)
         )
-    })
+    }) %>% bindEvent(input$calc_bt)
 
     mod_simulator_panel_module_server("panel1", ps_metrics)
     mod_simulator_panel_module_server("panel2", ps_metrics)

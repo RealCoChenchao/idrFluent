@@ -10,10 +10,13 @@
 #' @import plotly
 #' @import ggplot2
 #' @import highcharter
+#' @import shinyWidgets
+#' @import shiny
 
 mod_filter_module_ui <- function(id){
   ns <- NS(id)
   div(
+    chooseSliderSkin("Flat", color = "#112446"),
     Stack(
       horizontal = TRUE,
       tokens = list(childrenGap = 10),
@@ -118,6 +121,16 @@ mod_filter_module_server <- function(id){
       #   tidy_sf <- full_tidy_sf_2021q3
       # }
 
+      selectedYear <- (
+        if (length(input$year) > 0) input$year
+        else c(2010)
+      )
+
+      selectedSqft <- (
+        if (length(input$sqft) > 0) input$sqft
+        else c(10000)
+      )
+
       selectedFund <- (
         if (length(input$fund) > 0) input$fund
         else unique(tidy_sf$fund_name)
@@ -142,8 +155,8 @@ mod_filter_module_server <- function(id){
                              0)) %>%
         dplyr::filter(
           GEOID %in% selectedMetro,
-          year_built >= input$year,
-          square_feet >= input$sqft,
+          year_built >= selectedYear,
+          square_feet >= selectedSqft,
           operating >= minOperatingVal,
           fund_name %in% selectedFund,
           property_type %in% selectedSector
