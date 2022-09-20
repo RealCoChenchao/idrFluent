@@ -84,8 +84,7 @@ mod_simulator_module_server <- function(id){
                           by = c("fund_name")) %>%
         dplyr::filter(rebal_value != 0) %>%
         dplyr::mutate(input_weight = rebal_value * total_nav) %>%
-        dplyr::select(fund_name, input_weight,
-                      total_nav, rebal_value)
+        dplyr::select(fund_name, input_weight, rebal_value)
     })
 
     ps_metrics <- reactive({
@@ -95,7 +94,7 @@ mod_simulator_module_server <- function(id){
 
       calc_diversification <- calc_weight(fund_diversification,
                                           fund_weight(),
-                                          property_type)
+                                          diversification)
 
       calc_leverage <- calc_weight(fund_leverage, fund_weight())
 

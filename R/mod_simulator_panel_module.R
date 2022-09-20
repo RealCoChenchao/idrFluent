@@ -41,7 +41,7 @@ mod_simulator_panel_module_server <- function(id, summary_data){
       } else if(selectedMetric() == "gross_total"){
         ps_dodge_plot(summary_data()$calc_return, "year", "gross_total")
       } else if(selectedMetric() == "property_type"){
-        ps_dodge_plot(summary_data()$calc_diversification, "property_type", "total_pct")
+        ps_dodge_plot(summary_data()$calc_diversification, "diversification", "total_pct")
       } else if(selectedMetric() == "total_leverage"){
         ps_dodge_plot(summary_data()$calc_leverage, "fund_name", "total_leverage")
       } else if(selectedMetric() == "total_std"){

@@ -33,8 +33,7 @@ calc_weight <- function(input_dt,
         dplyr::select(fund_name,
                       {{ group_var }},
                       contains("total"))
-    ) %>%
-    dplyr::select(-total_nav)
+    )
 }
 
 # custimized format function for return, std and track error tables
