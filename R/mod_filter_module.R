@@ -218,10 +218,11 @@ mod_filter_module_server <- function(id){
     })
 
     output$plot <- renderHighchart({
-      ct_df <- dplyr::count(sf::st_drop_geometry(filtered_property()),
-                   fund_name,
-                   property_type,
-                   .drop = TRUE) %>%
+      ct_df <- filtered_property() %>%
+        sf::st_drop_geometry() %>%
+        dplyr::count(fund_name,
+                     property_type,
+                     .drop = TRUE) %>%
         dplyr::rename(Fund = fund_name,
                       Sector = property_type,
                       Count = n)
