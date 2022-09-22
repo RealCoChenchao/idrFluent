@@ -84,3 +84,22 @@ ps_dodge_plot <- function(df, x_value, y_value){
             element_text(size = 14,
                          face = "bold"))
 }
+
+
+fund_exp_diverf_plot <- function(df){
+  ggplot(data = df) +
+    geom_col(aes(x = reorder(diversification, -div_pct),
+                 y = div_pct),
+             fill = "#05D0EB") +
+    scale_y_continuous(labels = scales::percent,
+                       breaks = seq(0, 1, 0.05),
+                       limits = c(0, NA)) +
+    labs(x = "", y = "") +
+    theme_minimal() +
+    theme(axis.text.y =
+            element_text(size = 14,
+                         face = "bold"),
+          axis.text.x =
+            element_text(size = 14,
+                         face = "bold"))
+}

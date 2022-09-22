@@ -17,7 +17,7 @@
 returninfoBox <- function(title, data) {
   infoBox(
     title,
-    paste0(data*100,"%"),
+    paste0(round(data*100, 2),"%"),
     icon = shiny::icon("coins"),
     color = "aqua",
     fill = TRUE

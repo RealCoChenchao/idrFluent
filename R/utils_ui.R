@@ -191,6 +191,13 @@ ps_options <- list(
   list(key = "total_std", text = "Standard Deviation"),
   list(key = "total_te", text = "Tracking Error to ODCE"))
 
+diverf_options <- list(
+  list(key = "property_type", text = "Property Type"),
+  list(key = "region", text = "Region"),
+  list(key = "structure", text = "Structure"),
+  # list(key = "valuation", text = "Valuation"),
+  list(key = "lifecycle", text = "Lifecycle"))
+
 makePage <- function (title, subtitle, contents) {
   tagList(div(
     class = "page-title",
@@ -227,22 +234,8 @@ makesimpleCard <- function(content, size = 12, style = "") {
 
 header <- tagList(
   img(src = "/www/idr_logo.png", class = "logo"),
-  # div(Text(variant = "xLarge", "RADR"), class = "title"),
-  CommandBar(
-    items = list(
-      CommandBarItem("New", "Add", subitems = list(
-        CommandBarItem("Email message", "Mail", key = "emailMessage", href = "chenchao.zang@usrealco.com"),
-        CommandBarItem("Calendar event", "Calendar", key = "calendarEvent")
-      )),
-      CommandBarItem("Upload sales plan", "Upload"),
-      CommandBarItem("Share analysis", "Share"),
-      CommandBarItem("Download report", "Download")
-    ),
-    farItems = list(
-      CommandBarItem("Grid view", "Tiles", iconOnly = TRUE),
-      CommandBarItem("Info", "Info", iconOnly = TRUE)
-    ),
-    style = list(width = "100%")))
+  # div(Text(variant = "xLarge", "RADR"), class = "title")
+  )
 
 navigation <- Nav(
   groups = list(

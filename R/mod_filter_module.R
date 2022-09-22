@@ -162,7 +162,7 @@ mod_filter_module_server <- function(id){
           property_type %in% selectedSector
         )
 
-      result
+      return(result)
     })
 
     filtered_layer <- reactive({
@@ -221,8 +221,7 @@ mod_filter_module_server <- function(id){
       ct_df <- filtered_property() %>%
         sf::st_drop_geometry() %>%
         dplyr::count(fund_name,
-                     property_type,
-                     .drop = TRUE) %>%
+                     property_type) %>%
         dplyr::rename(Fund = fund_name,
                       Sector = property_type,
                       Count = n)
