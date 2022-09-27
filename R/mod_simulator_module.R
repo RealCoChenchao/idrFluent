@@ -31,6 +31,10 @@ mod_simulator_module_ui <- function(id){
       text = "Download Views",
       iconProps = list(iconName = "Download")
     ),
+    div(
+      style = "visibility: hidden;",
+      downloadButton(NS(id, "download"), label = "")
+    ),
     div(style = "height:10px"),
     Stack(
       tokens = list(childrenGap = 10),
@@ -72,6 +76,7 @@ mod_simulator_module_ui <- function(id){
 #' @noRd
 mod_simulator_module_server <- function(id){
   moduleServer( id, function(input, output, session){
+    ns <- session$ns
 
     fund_weight <- reactive({
 
