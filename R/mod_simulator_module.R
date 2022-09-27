@@ -8,6 +8,7 @@
 #'
 #' @importFrom shiny NS tagList
 #' @import shinyWidgets
+#' @importFrom shinyjs useShinyjs
 mod_simulator_module_ui <- function(id){
   ns <- NS(id)
   div(
@@ -24,6 +25,13 @@ mod_simulator_module_ui <- function(id){
         PrimaryButton.shinyInput(NS(id, "calc_bt"), text = "Apply Allocation"))
       ),
     div(style = "height:20px"),
+    shinyjs::useShinyjs(),
+    PrimaryButton.shinyInput(
+      NS(id, "downloadButton"),
+      text = "Download Views",
+      iconProps = list(iconName = "Download")
+    ),
+    div(style = "height:10px"),
     Stack(
       tokens = list(childrenGap = 10),
       horizontal = TRUE,
@@ -115,6 +123,18 @@ mod_simulator_module_server <- function(id){
     mod_simulator_panel_module_server("panel3", ps_metrics)
     mod_simulator_panel_module_server("panel4", ps_metrics)
 
+    observeEvent(input$downloadButton, {
+      shinyjs::click("download")
+    })
+
+    output$download <- downloadHandler(
+      filename = function() {
+        paste("data-", Sys.Date(), ".csv", sep="")
+      },
+      content = function(file) {
+        write.csv(ps_metrics()$calc_return, file)
+      }
+    )
 
   })
 }
