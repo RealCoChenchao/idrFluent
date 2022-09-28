@@ -64,60 +64,34 @@ addPortfolioMarkers <- function(map, df, selected_sector, cluster_option){
 }
 
 # dodge plot function for portfolio simulator
-ps_dodge_plot <- function(df, x_value, y_value){
-  df %>%
-    ggplot(aes(x = .data[[x_value]],
-               y = .data[[y_value]],
-               fill = fund_name,
-               label = scales::percent(.data[[y_value]], accuracy = 0.1))) +
-    geom_bar(position="dodge",stat="identity") +
-    scale_fill_manual(values = c("#12395b", "#a2a4a3")) +
-    scale_y_continuous(labels = scales::percent) +
-    geom_text(position = position_dodge(width = 0.9),
-              hjust =.5,
-              vjust = -0.5,
-              size = 3) +
-    labs(x = "", y ="", fill = "") +
-    theme_minimal() +
-    theme(axis.text.y =
-            element_text(size = 14,
-                         face = "bold"),
-          axis.text.x =
-            element_text(size = 14,
-                         face = "bold"))
-}
-
-
-fund_exp_diverf_plot <- function(df){
-  ggplot(data = df) +
-    geom_col(aes(x = reorder(diversification, -div_pct),
-                 y = div_pct),
-             fill = "#05D0EB") +
-    scale_y_continuous(labels = scales::percent,
-                       breaks = seq(0, 1, 0.05),
-                       limits = c(0, NA)) +
-    labs(x = "", y = "") +
-    theme_minimal() +
-    theme(axis.text.y =
-            element_text(size = 14,
-                         face = "bold"),
-          axis.text.x =
-            element_text(size = 14,
-                         face = "bold"))
-}
+# ps_dodge_plot <- function(df, x_value, y_value){
+#   df %>%
+#     ggplot(aes(x = .data[[x_value]],
+#                y = .data[[y_value]],
+#                fill = fund_name,
+#                label = scales::percent(.data[[y_value]], accuracy = 0.1))) +
+#     geom_bar(position="dodge",stat="identity") +
+#     scale_fill_manual(values = c("#12395b", "#a2a4a3")) +
+#     scale_y_continuous(labels = scales::percent) +
+#     geom_text(position = position_dodge(width = 0.9),
+#               hjust =.5,
+#               vjust = -0.5,
+#               size = 3) +
+#     labs(x = "", y ="", fill = "") +
+#     theme_minimal() +
+#     theme(axis.text.y =
+#             element_text(size = 14,
+#                          face = "bold"),
+#           axis.text.x =
+#             element_text(size = 14,
+#                          face = "bold"))
+# }
 
 ps_dodge_plot_v2 <- function(df, variable, value, fill_category = TRUE,
-                             label_accuracy = 0.1, x_text_angle = 0, template = "slides"){
+                             label_accuracy = 0.1, x_text_angle = 0,
+                             label_text_size = 3.5, axis_text_size = 12){
 
   standard_name <- c("Portfolio", "ODCE")
-
-  if(template == "slides"){
-    label_text_size <- 3.5
-    axis_text_size <- 12
-  }else if(template == "website"){
-    label_text_size <- 3.5
-    axis_text_size <- 12
-  }
 
   if(x_text_angle == 0){
     x_text_hjust <- NULL
@@ -198,6 +172,24 @@ ps_dodge_plot_v2 <- function(df, variable, value, fill_category = TRUE,
   p
 }
 
+fund_exp_diverf_plot <- function(df){
+  ggplot(data = df) +
+    geom_col(aes(x = reorder(diversification, -div_pct),
+                 y = div_pct),
+             fill = "#05D0EB") +
+    scale_y_continuous(labels = scales::percent,
+                       breaks = seq(0, 1, 0.05),
+                       limits = c(0, NA)) +
+    labs(x = "", y = "") +
+    theme_minimal() +
+    theme(axis.text.y =
+            element_text(size = 14,
+                         face = "bold"),
+          axis.text.x =
+            element_text(size = 14,
+                         face = "bold"))
+}
+
 # Slides functions
 disclaimer <- "For Institutional Use Only. Not for Public Distribution. Highly Confidential – Trade Secret and Patented"
 title_font <- fp_text(font.size = 40, bold = TRUE, color = "#444444", font.family = "Apex Sans Bold", underlined = FALSE)
@@ -258,7 +250,7 @@ generate_slides <- function(data){
 
   template <- gen_title_footnote_disclaimer_slide(template, "Tracking Error to ODCE",
                                                   paste0("Source: IDR. Data as of ", as_of_date, ".")) %>%
-    ph_with(value = ps_dodge_plot_v2(df = data$calc_sdtr %>% filter(fund_name != "ODCE"), variable = "year", value = "total_te"),
+    ph_with(value = ps_dodge_plot_v2(df = dplyr::filter(data$calc_sdtr, fund_name != "ODCE"), variable = "year", value = "total_te"),
             location = ph_location(left = 0.6, top = 1.18, width = 12.13, height = 5.77))
 
   n_slides <- length(template)
