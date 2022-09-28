@@ -8,14 +8,30 @@
 #'
 #' @importFrom shiny NS tagList
 #' @import shinyWidgets
+#' @import writexl
+#' @import stringr
 #' @importFrom shinyjs useShinyjs
 mod_simulator_module_ui <- function(id){
   ns <- NS(id)
   div(
     chooseSliderSkin("Flat", color = "#112446"),
     flowLayout(
-      mod_fund_text_ui(NS(id, "box1"), fund_names[1:4]),
-      mod_fund_text_ui(NS(id, "box2"), fund_names[5:8]),
+      Stack(
+        tokens = list(childrenGap = 40),
+        mod_fund_text_ui(NS(id, "box1"), fund_names[1:4]),
+        PrimaryButton.shinyInput(
+          NS(id, "downloadButton_slides"),
+          text = "Download Slides",
+          iconProps = list(iconName = "Download")
+        )),
+      Stack(
+        tokens = list(childrenGap = 40),
+        mod_fund_text_ui(NS(id, "box2"), fund_names[5:8]),
+        PrimaryButton.shinyInput(
+          NS(id, "downloadButton_data"),
+          text = "Download Data",
+          iconProps = list(iconName = "Download")
+        )),
       mod_fund_text_ui(NS(id, "box3"), fund_names[9:12]),
       mod_fund_text_ui(NS(id, "box4"), fund_names[13:16]),
       mod_fund_text_ui(NS(id, "box5"), fund_names[17:20]),
@@ -26,14 +42,13 @@ mod_simulator_module_ui <- function(id){
       ),
     div(style = "height:20px"),
     shinyjs::useShinyjs(),
-    PrimaryButton.shinyInput(
-      NS(id, "downloadButton"),
-      text = "Download Views",
-      iconProps = list(iconName = "Download")
+    div(
+      style = "visibility: hidden;",
+      downloadButton(NS(id, "download_slides"), label = "")
     ),
     div(
       style = "visibility: hidden;",
-      downloadButton(NS(id, "download"), label = "")
+      downloadButton(NS(id, "download_data"), label = "")
     ),
     div(style = "height:10px"),
     Stack(
@@ -107,7 +122,8 @@ mod_simulator_module_server <- function(id){
 
       calc_diversification <- calc_weight(fund_diversification,
                                           fund_weight(),
-                                          diversification)
+                                          diversification) %>%
+        mutate(diversification = stringr::str_to_title(diversification))
 
       calc_leverage <- calc_weight(fund_leverage, fund_weight())
 
@@ -123,24 +139,68 @@ mod_simulator_module_server <- function(id){
         )
     }) %>% bindEvent(input$calc_bt)
 
+    ps_metrics_download <- reactive({
+      return <- ps_metrics()$calc_return %>%
+        dplyr::select(fund_name, period = year,
+                      gross_total_return = gross_total, net_total_return = net_total) %>%
+        arrange(fund_name, period)
+
+      diversification <- ps_metrics()$calc_diversification %>%
+        dplyr::select(fund_name, property_type = diversification, percentage = total_pct) %>%
+        arrange(fund_name, property_type)
+
+      leverage <- ps_metrics()$calc_leverage %>%
+        dplyr::select(fund_name, total_leverage) %>%
+        arrange(fund_name)
+
+      standard_deviation <- ps_metrics()$calc_sdtr %>%
+        dplyr::select(fund_name, period = year, standard_deviation = total_std) %>%
+        arrange(fund_name, period)
+
+      tracking_error <- ps_metrics()$calc_sdtr %>%
+        filter(fund_name != "ODCE") %>%
+        dplyr::select(fund_name, period = year, tracking_error_to_odce = total_te) %>%
+        arrange(fund_name, period)
+
+      list(
+        `Total Return` = return,
+        `Property Type Diversification` = diversification,
+        `Portfolio Leverage` = leverage,
+        `Standard Deviation` = standard_deviation,
+        `Tracking Error to ODCE` = tracking_error
+      )
+    })
+
     mod_simulator_panel_module_server("panel1", ps_metrics)
     mod_simulator_panel_module_server("panel2", ps_metrics)
     mod_simulator_panel_module_server("panel3", ps_metrics)
     mod_simulator_panel_module_server("panel4", ps_metrics)
 
-    observeEvent(input$downloadButton, {
-      shinyjs::click("download")
+    observeEvent(input$downloadButton_slides, {
+      shinyjs::click("download_slides")
     })
 
-    output$download <- downloadHandler(
+    output$download_slides <- downloadHandler(
       filename = function() {
-        paste("data-", Sys.Date(), ".csv", sep="")
+        paste0("Portfolio Slides", ".pptx")
       },
       content = function(file) {
-        write.csv(ps_metrics()$calc_return, file)
+        print(generate_slides(ps_metrics()), file)
       }
     )
 
+    observeEvent(input$downloadButton_data, {
+      shinyjs::click("download_data")
+    })
+
+    output$download_data <- downloadHandler(
+      filename = function() {
+        paste0("Portfolio Data", ".xlsx")
+      },
+      content = function(file) {
+        writexl::write_xlsx(ps_metrics_download(), file)
+      }
+    )
   })
 }
 
