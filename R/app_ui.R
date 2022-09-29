@@ -38,7 +38,8 @@ golem_add_external_resources <- function() {
     favicon(ext = 'png'),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "idrFluent"
+      app_title = "idrFluent",
+      attachment = "idr_logo.png"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()

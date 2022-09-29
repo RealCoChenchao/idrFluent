@@ -149,6 +149,7 @@ mod_filter_module_server <- function(id){
       minOperatingVal <- if (isTRUE(input$operatingOnly)) 1 else 0
 
       result <- tidy_sf %>%
+        sf::st_as_sf() %>%
         dplyr::mutate(
           operating = ifelse(property_life_cycle == "Operating",
                              1,

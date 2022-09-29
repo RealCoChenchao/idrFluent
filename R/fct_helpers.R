@@ -17,7 +17,7 @@ calc_weight <- function(input_dt,
   prep_data <- input_dt %>%
     dplyr::inner_join(wt,
                       by = c("fund_name")) %>%
-    group_by({{ group_var }})
+    dplyr::group_by({{ group_var }})
 
   prep_data %>%
     dplyr::summarise(

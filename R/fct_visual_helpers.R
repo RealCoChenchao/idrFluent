@@ -192,9 +192,9 @@ fund_exp_diverf_plot <- function(df){
 
 # Slides functions
 disclaimer <- "For Institutional Use Only. Not for Public Distribution. Highly Confidential – Trade Secret and Patented"
-title_font <- fp_text(font.size = 40, bold = TRUE, color = "#444444", font.family = "Apex Sans Bold", underlined = FALSE)
-footnote_font <- fp_text(font.size = 10, bold = FALSE, color = "#707070", font.family = "Gotham Narrow Book", underlined = FALSE)
-page_number_font <- fp_text(font.size = 10, bold = TRUE, color = "#A1A1A1", font.family = "Apex Sans Bold", underlined = FALSE)
+title_font <- officer::fp_text(font.size = 40, bold = TRUE, color = "#444444", font.family = "Apex Sans Bold", underlined = FALSE)
+footnote_font <- officer::fp_text(font.size = 10, bold = FALSE, color = "#707070", font.family = "Gotham Narrow Book", underlined = FALSE)
+page_number_font <- officer::fp_text(font.size = 10, bold = TRUE, color = "#A1A1A1", font.family = "Apex Sans Bold", underlined = FALSE)
 
 clear_template <- function(template){
   len = length(template)
@@ -217,7 +217,7 @@ gen_title_footnote_disclaimer_slide <- function(template, title, footnote){
 }
 
 generate_slides <- function(data){
-  as_of_date <- max(fund_latest_return$quarter)
+  as_of_date <- max(data$quarter)
   as_of_date <- paste0(str_sub(as_of_date, 7L, 7L), "Q ", str_sub(as_of_date, 1L, 4L))
 
   template <- read_pptx("slide_template/template.pptx")

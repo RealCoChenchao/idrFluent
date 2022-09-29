@@ -50,7 +50,7 @@ mod_simulator_module_ui <- function(id){
       style = "visibility: hidden;",
       downloadButton(NS(id, "download_data"), label = "")
     ),
-    div(style = "height:10px"),
+    # div(style = "height:10px"),
     Stack(
       tokens = list(childrenGap = 10),
       horizontal = TRUE,
@@ -93,6 +93,14 @@ mod_simulator_module_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
+    real_estate_db <- make_pool()
+    # read the fund nav from the table
+    fund_nav <- dplyr::tbl(real_estate_db,
+                           "radar_odce_performance")  %>%
+      dplyr::filter(quarter == max(quarter, na.rm = TRUE)) %>%
+      dplyr::select(quarter, fund_name, total_nav = net_asset_value) %>%
+      dplyr::collect()
+
     fund_weight <- reactive({
 
       fund_allocation <-
@@ -116,6 +124,33 @@ mod_simulator_module_server <- function(id){
     })
 
     ps_metrics <- reactive({
+
+      # get the ODCE and component fund leverage
+      fund_leverage <- dplyr::tbl(real_estate_db, "radar_odce_performance") %>%
+        dplyr::filter(quarter == max(quarter, na.rm = TRUE)) %>%
+        dplyr::select(quarter, fund_name, total_leverage) %>%
+        dplyr::collect()
+
+      # read the ODCE and all component fund quarterly and historical returns
+      fund_latest_return <- dplyr::tbl(real_estate_db,
+                                       "radar_odce_performance") %>%
+        dplyr::filter(quarter == max(quarter, na.rm = TRUE)) %>%
+        dplyr::select(quarter, fund_name, contains("total_return")) %>%
+        dplyr::collect()
+
+      summarized_return <- dplyr::tbl(real_estate_db,  "ps_summarized_return") %>%
+        dplyr::collect()
+
+      # read the ODCE and all component fund sector diversification
+      fund_diversification <- dplyr::tbl(real_estate_db, "radar_odce_divf") %>%
+        dplyr::filter(quarter == max(quarter),
+                      diverf_cat == "property_type",
+                      !is.na(div_pct)) %>%
+        dplyr::select(fund_name,
+                      diversification,
+                      total_pct = div_pct) %>%
+        dplyr::collect()
+
       intermediate_return <- calc_weight(fund_latest_return, fund_weight())
       calc_return <- wider_return_sdtr(intermediate_return,
                                        c(1, 3, 5, 7, 10, 15))

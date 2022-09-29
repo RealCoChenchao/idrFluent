@@ -233,9 +233,13 @@ makesimpleCard <- function(content, size = 12, style = "") {
 }
 
 header <- tagList(
-  img(src = "/www/idr_logo.png", class = "logo"),
-  # div(Text(variant = "xLarge", "RADR"), class = "title")
-  )
+  img(src = "www/idr_logo.png", class = "logo"),
+  CommandBar(
+    farItems = list(
+      CommandBarItem("Grid view", "Tiles", iconOnly = TRUE),
+      CommandBarItem("Info", "Info", iconOnly = TRUE)
+    ),
+    style = list(width = "100%")))
 
 navigation <- Nav(
   groups = list(

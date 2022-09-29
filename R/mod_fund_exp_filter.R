@@ -78,7 +78,7 @@ mod_fund_exp_filter_server <- function(id){
 
     # for the infoboxes
     fund_exp <- reactive({
-
+      real_estate_db <- make_pool()
       selectedFund <- (
         if (length(input$fund) > 0) input$fund
         else c("AEW")
@@ -174,6 +174,7 @@ mod_fund_exp_filter_server <- function(id){
         else c("property_type")
       )
 
+      real_estate_db <- make_pool()
       filtered_divf <- tbl(real_estate_db,
                      "radar_compfund_divf") %>%
         dplyr::filter(!is.na(div_pct),

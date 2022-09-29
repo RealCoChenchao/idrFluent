@@ -10,8 +10,11 @@ Encoding: UTF-8
 RoxygenNote: 7.2.1
 Imports: 
     attempt,
+    dbplyr,
     dplyr,
     DT,
+    forcats,
+    ggExtra,
     ggplot2,
     glue,
     golem,
@@ -19,15 +22,22 @@ Imports:
     htmltools,
     leaflet,
     leaflet.extras,
+    officer,
+    pkgload,
     plotly,
     scales,
+    sf,
     shiny,
     shiny.fluent,
     shiny.router,
     shinydashboard,
+    shinyjs,
+    shinyWidgets,
     stringr,
     tibble,
     tidyr,
+    txModelUtils,
+    writexl,
     zoo
 Depends: 
     R (>= 2.10)

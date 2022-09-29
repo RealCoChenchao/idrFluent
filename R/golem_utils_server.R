@@ -53,6 +53,19 @@ drop_nulls <- function(x) {
   }
 }
 
+make_pool <- function(){
+  pool::dbPool(
+    drv      = RPostgres::Postgres(),
+    dbname   = "idr_database",
+    host     = "postgresql-idr.cnlo0mq4y0a6.us-east-1.rds.amazonaws.com",
+    port     = "5432",
+    user     = "idr_db",
+    password = get_golem_config("AWS_IDR_PASSWORD")
+  )
+}
+
+
+
 #' Typing reactiveValues is too long
 #'
 #' @inheritParams reactiveValues
