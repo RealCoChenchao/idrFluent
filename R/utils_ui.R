@@ -308,7 +308,7 @@ home_page <- makePage(
 
 simulator_page <- makePage(
   "Portfolio simulator",
-  "Try your best interests",
+  "Create Customized Fund by Entering Dollar or Percentage Allocation to Each Fund in the Boxes Below",
   div(
     mod_simulator_module_ui("simulator")
   )
