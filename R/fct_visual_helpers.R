@@ -172,6 +172,65 @@ ps_dodge_plot_v2 <- function(df, variable, value, fill_category = TRUE,
   p
 }
 
+ps_fund_weight_plot <- function(df){
+  df <- df %>%
+    dplyr::select(name = fund_name, value = rebal_value) %>%
+    mutate(label_text = scales::percent(value, accuracy = 0.1)) %>%
+    mutate(vjust = ifelse(label_text < 0, 1.5, -0.5))
+
+  seq <- pretty(c(df$value, 0), 5)
+  breaks <- seq[2] - seq[1]
+
+  if(breaks < 0.01){
+    label_scale <- scales::percent_format(accuracy = 0.1)
+  }else{
+    label_scale <- scales::percent_format(accuracy = 1)
+  }
+
+  if(max(seq) > 0){
+    seq <- c(seq, max(seq) + breaks)
+  }
+
+  if(min(seq) < 0){
+    seq <- c(min(seq) - breaks, seq)
+  }
+
+  if(dim(df)[1] <= 8){
+    x_text_angle <- 0
+    x_text_hjust <- NULL
+    x_text_vjust <- NULL
+  }else{
+    x_text_angle <- 60
+    x_text_hjust <- 1
+    x_text_vjust <- 1
+  }
+
+ p <- df %>%
+    ggplot(aes(x = reorder(name, -value), y = value, label = label_text, vjust = vjust)) +
+    geom_bar(stat = "identity", width = 0.6, position = position_dodge(width = 0.8), fill = "#1D2EA7") +
+    geom_text(size = 3.5, color = "#444444", position = position_dodge(width = 0.8)) +
+    scale_y_continuous(labels = label_scale,
+                       breaks = seq,
+                       limits = c(min(seq), max(seq))) +
+    ggExtra::removeGrid(x = TRUE, y = TRUE) +
+    theme(axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text.x = element_text(size = 12, color = "#444444", family = "Helvetica",
+                                     angle = x_text_angle, vjust = x_text_vjust, hjust = x_text_hjust),
+          axis.text.y = element_text(size = 12, color = "#444444", family = "Helvetica"),
+          panel.background = element_rect(fill = "transparent"),
+          plot.background = element_rect(fill = "transparent", color = NA),
+          panel.grid.major = element_line(color = "#D9D9D9", size = 0.2),
+          legend.position = "bottom",
+          legend.text = element_text(size = 12, color = "#444444", family = "Helvetica"),
+          legend.key.height = unit(4, 'mm'),
+          legend.key.width = unit(4, 'mm')) +
+    geom_hline(yintercept = 0, size = 0.2)
+
+ p
+}
+
 fund_exp_diverf_plot <- function(df){
   ggplot(data = df) +
     geom_col(aes(x = reorder(diversification, -div_pct),
@@ -216,12 +275,17 @@ gen_title_footnote_disclaimer_slide <- function(template, title, footnote){
             location = ph_location(left = 9.15, top = 6.93, width = 3.7, height = 0.44))
 }
 
-generate_slides <- function(data){
-  as_of_date <- max(data$quarter)
+generate_slides <- function(data, fund_weight){
+  as_of_date <- data$quarter
   as_of_date <- paste0(str_sub(as_of_date, 7L, 7L), "Q ", str_sub(as_of_date, 1L, 4L))
 
   template <- read_pptx("slide_template/template.pptx")
   template <- clear_template(template)
+
+  template <- gen_title_footnote_disclaimer_slide(template, "Portfolio Composition",
+                                                  paste0("Source: IDR. Data as of ", as_of_date, ".")) %>%
+    ph_with(value = ps_fund_weight_plot(fund_weight),
+            location = ph_location(left = 0.6, top = 1.18, width = 12.13, height = 5.77))
 
   template <- gen_title_footnote_disclaimer_slide(template, "Net Total Return (Annualized)",
                                                   paste0("Source: IDR. Data as of ", as_of_date, ".")) %>%

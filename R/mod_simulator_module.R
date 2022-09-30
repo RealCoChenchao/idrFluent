@@ -167,7 +167,8 @@ mod_simulator_module_server <- function(id){
                                      c(3, 5, 10))
 
       return(
-        list(calc_return = calc_return,
+        list(quarter = max(fund_latest_return$quarter, na.rm = TRUE),
+             calc_return = calc_return,
              calc_diversification = calc_diversification,
              calc_leverage = calc_leverage,
              calc_sdtr = calc_sdtr)
@@ -175,6 +176,11 @@ mod_simulator_module_server <- function(id){
     }) %>% bindEvent(input$calc_bt)
 
     ps_metrics_download <- reactive({
+
+      portfolio_composition <- fund_weight() %>%
+        dplyr::select(fund_name, percentage = rebal_value) %>%
+        arrange(desc(percentage))
+
       return <- ps_metrics()$calc_return %>%
         dplyr::select(fund_name, period = year,
                       gross_total_return = gross_total, net_total_return = net_total) %>%
@@ -198,6 +204,7 @@ mod_simulator_module_server <- function(id){
         arrange(fund_name, period)
 
       list(
+        `Portfolio Composition` = portfolio_composition,
         `Total Return` = return,
         `Property Type Diversification` = diversification,
         `Portfolio Leverage` = leverage,
@@ -220,7 +227,7 @@ mod_simulator_module_server <- function(id){
         paste0("Portfolio Slides", ".pptx")
       },
       content = function(file) {
-        print(generate_slides(ps_metrics()), file)
+        print(generate_slides(data = ps_metrics(), fund_weight = fund_weight()), file)
       }
     )
 
