@@ -136,7 +136,8 @@ mod_simulator_module_server <- function(id){
                                        "radar_odce_performance") %>%
         dplyr::filter(quarter == max(quarter, na.rm = TRUE)) %>%
         dplyr::select(quarter, fund_name, contains("total_return")) %>%
-        dplyr::collect()
+        dplyr::collect() %>%
+        dplyr::select(-contains("15"))
 
       summarized_return <- dplyr::tbl(real_estate_db,  "ps_summarized_return") %>%
         dplyr::collect()
@@ -153,7 +154,7 @@ mod_simulator_module_server <- function(id){
 
       intermediate_return <- calc_weight(fund_latest_return, fund_weight())
       calc_return <- wider_return_sdtr(intermediate_return,
-                                       c(1, 3, 5, 7, 10, 15))
+                                       c(1, 3, 5, 7, 10))
 
       calc_diversification <- calc_weight(fund_diversification,
                                           fund_weight(),
