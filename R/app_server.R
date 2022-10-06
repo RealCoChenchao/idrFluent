@@ -19,5 +19,6 @@ app_server <- function(input, output, session) {
   mod_filter_module_server("filters")
   mod_simulator_module_server("simulator")
   mod_fund_exp_filter_server("cf_overview_filter")
+  mod_raster_view_server("idr_kym")
   router$server(input, output, session)
 }

@@ -178,6 +178,39 @@ sector_options <- list(
   list(key = "Hotel", text = "Hotel"),
   list(key = "Parking", text = "Parking"))
 
+raster_sector_options <- list(
+  list(key = "multifamily", text = "Apartment"),
+  list(key = "industrial", text = "Industrial"),
+  list(key = "office", text = "Office"))
+
+googlesheets4::gs4_auth(cache = ".secrets",
+                        email = TRUE)
+raster_variables <- googlesheets4::read_sheet("1CRwiTtRTyl_8zFSyrsn2oXizGTYY0QSNtyJ1H5nRQPg") %>%
+  dplyr::filter(idr_app == "Y")
+
+raster_metric_options <- raster_variables %>%
+  dplyr::select(text = english_name,
+                key = variable_name) %>%
+  dplyr::distinct() %>%
+  jsonlite::toJSON(dataframe = "rows")
+
+# raster_metric_options <- list(
+#   list(key = "total_population", text = "Total Population"),
+#   list(key = "edattain_bachorhigher", text = "Count of residents with bachelor degree or higher"),
+#   list(key = "median_household_income", text = "Median household income"))
+
+raster_radius_options <- list(
+  list(text = "0.5 miles", key = "___0.5___miles"),
+  list(text = "1 mile", key = "___1.0___miles"),
+  # list(text = "3 miles", key = "___3.0___miles"),
+  list(text = "5min drive", key = "___5___minutes"),
+  list(text = "10min drive", key = "___10___minutes")
+  # list(text = "15min drive", key = "___15___minutes"),
+  # list(text = "20min drive", key = "___20___minutes"),
+  # list(text = "30min drive", key = "___30___minutes"),
+  # list(text = "45min drive", key = "___45___minutes")
+)
+
 quarter_options <- list(
   list(key = "2021 Q1", text = "2021 Q1"),
   list(key = "2021 Q2", text = "2021 Q2"),
@@ -248,6 +281,7 @@ navigation <- Nav(
       list(name = 'Query Tool', url = '#!/other', key = 'querytool', icon = 'BIDashboard'),
       list(name = 'Component Fund Overview', url = '#!/cf_overview', key = 'cf_overview', icon = 'BIDashboard'),
       list(name = 'Portfolio Simulator', url = '#!/ps', key = 'simulator', icon = 'FunnelChart'),
+      list(name = 'Know Your Market', url = '#!/idr_kym', key = 'idr_kym', icon = 'FunnelChart'),
       list(name = 'IDR', url = 'https://idrinvestments.com', key = 'idr', icon = 'WebComponents'),
       list(name = 'USAA Real Estate', url = 'https://www.usrealco.com/', key = 'realco', icon = 'WebAppBuilderFragment')
     ))
@@ -266,8 +300,6 @@ footer <- Stack(
   horizontal = TRUE,
   horizontalAlign = 'space-between',
   tokens = list(childrenGap = 20),
-  # Text(variant = "medium", "Built with ❤ by Chenchao Zang", block=TRUE),
-  # Text(variant = "medium", nowrap = FALSE, "If you'd like to learn more, reach out to us at chenchao.zang@usrealco.com"),
   Text(variant = "medium", nowrap = FALSE, "All rights reserved.")
 )
 
@@ -308,7 +340,8 @@ home_page <- makePage(
 
 simulator_page <- makePage(
   "Portfolio simulator",
-  "Create Customized Fund by Entering Dollar or Percentage Allocation to Each Fund in the Boxes Below",
+  "",
+  # "Create Customized Fund by Entering Dollar or Percentage Allocation to Each Fund in the Boxes Below",
   div(
     mod_simulator_module_ui("simulator")
   )
@@ -321,11 +354,21 @@ cf_overview_page <- makePage(
     mod_fund_exp_filter_ui("cf_overview_filter")
   )
 )
+
+raster_view_page <- makePage(
+  "Spatial heatmaps",
+  "Know your market",
+  div(
+    mod_raster_view_ui("idr_kym")
+  )
+)
+
 router <- make_router(
   route("/", home_page),
   route("other", querytool_page),
   route("ps", simulator_page),
-  route("cf_overview", cf_overview_page))
+  route("cf_overview", cf_overview_page),
+  route("idr_kym", raster_view_page))
 
 shiny::addResourcePath("shiny.router", system.file("www", package = "shiny.router"))
 shiny_router_js_src <- file.path("shiny.router", "shiny.router.js")

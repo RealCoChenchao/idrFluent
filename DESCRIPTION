@@ -25,6 +25,8 @@ Imports:
     officer,
     pkgload,
     plotly,
+    raster,
+    rcAppTools (>= 0.0.0.9000.0.0.0.1665073990),
     scales,
     sf,
     shiny,
@@ -36,9 +38,12 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    txModelUtils,
+    txModelUtils (>= 0.1.0.0.0.0.1629571520),
     writexl,
     zoo
 Depends: 
     R (>= 2.10)
 LazyData: true
+Remotes:  
+    https://github.com/entropic-rumble/txModelUtils.git,
+    https://github.com/RealCoForecast/rcAppTools.git
