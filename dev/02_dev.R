@@ -16,18 +16,35 @@
 ## Dependencies ----
 ## Amend DESCRIPTION with dependencies read from package code parsing
 golem::use_recommended_deps()
+usethis::use_package("dbplyr")
+usethis::use_package("sf")
 usethis::use_package("htmltools")
 usethis::use_package("shiny.fluent")
 usethis::use_package("dplyr")
 usethis::use_package("shiny.router")
 usethis::use_package("glue")
+usethis::use_package("leaflet")
 usethis::use_package("leaflet.extras")
 usethis::use_package("scales")
 usethis::use_package("tidyr")
+usethis::use_package("stringr")
 usethis::use_package("tibble")
 usethis::use_package("ggplot2")
 usethis::use_package("plotly")
 usethis::use_package("highcharter")
+usethis::use_package("shinydashboard")
+usethis::use_package("zoo")
+usethis::use_package("shinyjs")
+usethis::use_package("forcats")
+usethis::use_package("shinyWidgets")
+usethis::use_package("ggExtra")
+usethis::use_package("officer")
+usethis::use_package("writexl")
+usethis::use_dev_package("txModelUtils",
+                         remote = "https://github.com/entropic-rumble/txModelUtils.git")
+usethis::use_dev_package("rcAppTools",
+                         remote = "https://github.com/RealCoForecast/rcAppTools.git")
+usethis::use_package("raster")
 attachment::att_amend_desc()
 
 ## Add modules ----
@@ -35,11 +52,19 @@ attachment::att_amend_desc()
 golem::add_module(name = "dropdown_of_module1", with_test = TRUE) # Name of the module
 golem::add_module(name = "filter_module", with_test = TRUE) # Name of the module
 golem::add_module(name = "simulator_module") # Name of the module
+golem::add_module(name = "simulator_panel_module") # Name of the module
+golem::add_module(name = "fund_exp_filter") # Name of the module
+golem::add_module(name = "fund_text") # Name of the module
+golem::add_module(name = "raster_view")
+
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
 golem::add_fct("helpers")
-golem::add_utils("helpers", with_test = TRUE)
+golem::add_fct("visual_helpers")
+golem::add_fct("preload_data")
+golem::add_utils("helpers")
+golem::add_utils("ui")
 # golem::add_utils("UIformat_helpers")
 
 ## External resources
