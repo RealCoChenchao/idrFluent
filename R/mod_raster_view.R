@@ -52,7 +52,7 @@ mod_raster_view_ui <- function(id){
                                      label = "Apply percentile?"),
                    Toggle.shinyInput(NS(id, "fund"),
                                      value = FALSE,
-                                     label = "Filter by fund (Disabled)"),
+                                     label = "Filter by fund (Disenabled)"),
                    conditionalPanel(
                      sprintf("input['%s'] != ''", ns("fund")),
 
@@ -98,25 +98,8 @@ mod_raster_view_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
 
-    key_vars <- c("property_type", "GEOID", "file_ext")
-    raster_manifest <- aws.s3::get_bucket_df(bucket = "realco-research-app",
-                                             prefix = "annual_demographic_raster/property_type") %>%
-      tibble::as_tibble() %>%
-      dplyr::select(Key, LastModified, Size, Bucket) %>%
-      dplyr::mutate(LastModified = lubridate::as_datetime(LastModified)) %>%
-      tidyr::separate(col = Key,
-                      into = key_vars,
-                      remove = FALSE,
-                      sep = "___") %>%
-      dplyr::mutate_at(
-        dplyr::vars(dplyr::one_of(key_vars)),
-        dplyr::funs(stringr::str_sub(
-          stringr::str_extract(
-            string = ., pattern = "\\([[^\\)]]+\\)"
-          ), start = 2L, end = -2L
-        ))
-      ) %>%
-      dplyr::select(-file_ext)
+    annual_raster_manifest <- summary_raster_manifest("annual_demographic_raster/property_type")
+    monthly_raster_manifest <- summary_raster_manifest("monthly_allsector_raster/property_type")
 
     googlesheets4::gs4_auth(cache = ".secrets",
                             email = TRUE)
@@ -146,11 +129,19 @@ mod_raster_view_server <- function(id){
         else c("multifamily")
       )
 
-      raster_list <- raster_manifest %>%
+      annual_raster_list <- annual_raster_manifest %>%
         dplyr::filter(GEOID == selectedMetro,
                       property_type == selectedSector) %>%
         aws.s3::s3readRDS(object = .$Key,
                           bucket = .$Bucket)
+
+      monthly_raster_list <- monthly_raster_manifest %>%
+        dplyr::filter(GEOID == selectedMetro,
+                      property_type == selectedSector) %>%
+        aws.s3::s3readRDS(object = .$Key,
+                          bucket = .$Bucket)
+
+      raster_list <- c(annual_raster_list, monthly_raster_list)
     })
 
     selected_raster <- reactive({
@@ -169,6 +160,7 @@ mod_raster_view_server <- function(id){
                            selectedMetric,
                            selectedRadius)
     }) %>%
+      bindCache(input$metro, input$sector, input$metric, input$radius) %>%
       bindEvent(input$render)
 
     output$map <- renderLeaflet({
