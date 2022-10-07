@@ -119,8 +119,9 @@ mod_simulator_module_server <- function(id){
         dplyr::inner_join(fund_nav,
                           by = c("fund_name")) %>%
         dplyr::filter(rebal_value != 0) %>%
-        dplyr::mutate(input_weight = rebal_value * total_nav) %>%
-        dplyr::select(fund_name, input_weight, rebal_value)
+        # dplyr::mutate(input_weight = rebal_value * total_nav) %>%
+        dplyr::mutate(input_weight = rebal_value) %>%
+        dplyr::select(fund_name, input_weight)
     })
 
     ps_metrics <- reactive({
