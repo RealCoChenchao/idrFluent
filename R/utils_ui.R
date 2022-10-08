@@ -281,10 +281,10 @@ navigation <- Nav(
   groups = list(
     list(links = list(
       list(name = 'Home', url = '#!/', key = 'home', icon = 'Home'),
-      list(name = 'Query Tool', url = '#!/other', key = 'querytool', icon = 'BIDashboard'),
+      list(name = 'Query Tool', url = '#!/other', key = 'querytool', icon = 'QueryList'),
       list(name = 'Component Fund Overview', url = '#!/cf_overview', key = 'cf_overview', icon = 'BIDashboard'),
       list(name = 'Portfolio Simulator', url = '#!/ps', key = 'simulator', icon = 'FunnelChart'),
-      list(name = 'Know Your Market', url = '#!/idr_kym', key = 'idr_kym', icon = 'FunnelChart'),
+      list(name = 'Know Your Market', url = '#!/idr_kym', key = 'idr_kym', icon = 'MapLayers'),
       list(name = 'IDR', url = 'https://idrinvestments.com', key = 'idr', icon = 'WebComponents'),
       list(name = 'USAA Real Estate', url = 'https://www.usrealco.com/', key = 'realco', icon = 'WebAppBuilderFragment')
     ))
