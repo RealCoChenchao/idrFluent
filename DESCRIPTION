@@ -27,6 +27,7 @@ Imports:
     plotly,
     raster,
     rcAppTools (>= 0.0.0.9000.0.0.0.1665073990),
+    rgdal,
     scales,
     sf,
     shiny,
@@ -44,6 +45,6 @@ Imports:
 Depends: 
     R (>= 2.10)
 LazyData: true
-Remotes:  
+Remotes: 
     https://github.com/entropic-rumble/txModelUtils.git,
     https://github.com/RealCoForecast/rcAppTools.git
