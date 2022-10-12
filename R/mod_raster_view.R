@@ -57,7 +57,7 @@ mod_raster_view_ui <- function(id){
                                      label = "Show property in clusters?"),
                    Toggle.shinyInput(NS(id, "fund"),
                                      value = FALSE,
-                                     label = "Overlay ODCE Property (Fund Disenabled)"),
+                                     label = "Overlay ODCE Property"),
                    conditionalPanel(
                      sprintf("input['%s'] != ''", ns("fund")),
 
