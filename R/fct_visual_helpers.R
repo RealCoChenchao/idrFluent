@@ -174,7 +174,7 @@ ps_dodge_plot_v2 <- function(df, variable, value, fill_category = TRUE,
 
 ps_fund_weight_plot <- function(df){
   df <- df %>%
-    dplyr::select(name = fund_name, value = rebal_value) %>%
+    dplyr::select(name = fund_name, value = input_weight) %>%
     mutate(label_text = scales::percent(value, accuracy = 0.1)) %>%
     mutate(vjust = ifelse(label_text < 0, 1.5, -0.5))
 
