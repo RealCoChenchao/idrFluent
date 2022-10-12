@@ -175,7 +175,7 @@ mod_raster_view_server <- function(id){
         else unique(tidy_sf$GEOID)
       )
 
-      selectedFundname <- (
+      selectedFund <- (
         if (length(input$fund_name) > 0 & isTRUE(input$fund)) input$fund_name
         else unique(tidy_sf$fund_name)
       )
