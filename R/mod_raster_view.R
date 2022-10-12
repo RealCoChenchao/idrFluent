@@ -13,6 +13,8 @@
 mod_raster_view_ui <- function(id){
   ns <- NS(id)
   div(
+    waiter::useWaiter(),
+    waiter::waiterOnBusy(),
     Stack(
       horizontal = TRUE,
       tokens = list(childrenGap = 10),
@@ -40,7 +42,7 @@ mod_raster_view_ui <- function(id){
                                          )),
                                        options = metro_options),
                    Dropdown.shinyInput(NS(id, "metric"),
-                                       placeHolder = "Total Population",
+                                       placeHolder = "Population, 2020",
                                        value = "total_population",
                                        options = raster_metric_options),
                    Dropdown.shinyInput(NS(id, "radius"),
@@ -50,9 +52,12 @@ mod_raster_view_ui <- function(id){
                    Toggle.shinyInput(NS(id, "percentile"),
                                      value = FALSE,
                                      label = "Apply percentile?"),
+                   Toggle.shinyInput(NS(id, "clusterOnly"),
+                                     value = TRUE,
+                                     label = "Show property in clusters?"),
                    Toggle.shinyInput(NS(id, "fund"),
                                      value = FALSE,
-                                     label = "Filter by fund (Disenabled)"),
+                                     label = "Overlay ODCE Property (Fund Disenabled)"),
                    conditionalPanel(
                      sprintf("input['%s'] != ''", ns("fund")),
 
@@ -85,7 +90,8 @@ mod_raster_view_ui <- function(id){
                div(style="max-height: 800px; overflow: auto",
                    leafletOutput(NS(id, "map"),
                                  height = 800,
-                                 width = 1500)
+                                 width = 1400)
+
                ))
     )
   )
@@ -109,11 +115,13 @@ mod_raster_view_server <- function(id){
         jsonlite::toJSON(dataframe = "rows")
 
       updateDropdown.shinyInput(inputId = "metric",
+                                value = "total_population",
                                 options = update_options)
       }) %>%
       bindEvent(input$sector)
 
     selected_raster_list <- reactive({
+
       selectedMetro <- (
         if (length(input$metro) > 0) input$metro
         else c("408")
@@ -140,6 +148,7 @@ mod_raster_view_server <- function(id){
     })
 
     selected_raster <- reactive({
+
       selectedMetric <- (
         if (length(input$metric) > 0) input$metric
         else c("total_population")
@@ -154,18 +163,59 @@ mod_raster_view_server <- function(id){
                            raster_variables,
                            selectedMetric,
                            selectedRadius)
+
     }) %>%
       bindCache(input$metro, input$sector, input$metric, input$radius) %>%
       bindEvent(input$render)
 
+    filtered_property <- reactive({
+
+      selectedMetro <- (
+        if (length(input$metro) > 0) input$metro
+        else unique(tidy_sf$GEOID)
+      )
+
+      selectedFundname <- (
+        if (length(input$fund_name) > 0 & isTRUE(input$fund)) input$fund_name
+        else unique(tidy_sf$fund_name)
+      )
+
+      tidy_sf %>%
+        sf::st_as_sf() %>%
+        dplyr::filter(
+          GEOID %in% selectedMetro,
+          fund_name %in% selectedFund
+        )
+    })
+
     output$map <- renderLeaflet({
-      req(selected_raster())
+      req(selected_raster(), cancelOutput = TRUE)
       selectedPercentile <- (
         if (isTRUE(input$percentile)) c("Percentile")
         else c("Continuous")
       )
 
-      rcAppTools::plot_raster(selected_raster(), selectedPercentile)
+      if(!isTRUE(input$fund)){
+        rcAppTools::plot_raster(selected_raster(), selectedPercentile)
+      }else{
+        rcAppTools::plot_raster(selected_raster(), selectedPercentile) %>%
+          addPortfolioMarkers(df = filtered_property(),
+                              selected_sector = "Office",
+                              cluster_option = input$clusterOnly) %>%
+          addPortfolioMarkers(df = filtered_property(),
+                              selected_sector = "Industrial",
+                              cluster_option = input$clusterOnly) %>%
+          addPortfolioMarkers(df = filtered_property(),
+                              selected_sector = "Retail",
+                              cluster_option = input$clusterOnly) %>%
+          addPortfolioMarkers(df = filtered_property(),
+                              selected_sector = "Apartment",
+                              cluster_option = input$clusterOnly) %>%
+          addPortfolioMarkers(df = filtered_property(),
+                              selected_sector = "Other",
+                              cluster_option = input$clusterOnly)
+      }
+
     })
 
   })
