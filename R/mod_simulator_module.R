@@ -180,7 +180,7 @@ mod_simulator_module_server <- function(id){
     ps_metrics_download <- reactive({
 
       portfolio_composition <- fund_weight() %>%
-        dplyr::select(fund_name, percentage = rebal_value) %>%
+        dplyr::select(fund_name, percentage = input_weight) %>%
         arrange(desc(percentage))
 
       return <- ps_metrics()$calc_return %>%
