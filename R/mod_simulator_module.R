@@ -15,6 +15,7 @@ mod_simulator_module_ui <- function(id){
   ns <- NS(id)
   div(
     chooseSliderSkin("Flat", color = "#112446"),
+    # Text("Hint: Number only. Eg: 50 could represent % or $"),
     flowLayout(
       Stack(
         tokens = list(childrenGap = 40),
