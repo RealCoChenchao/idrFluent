@@ -183,13 +183,13 @@ raster_sector_options <- list(
   list(key = "industrial", text = "Industrial"),
   list(key = "office", text = "Office"))
 
-# googlesheets4::gs4_deauth()
-# googlesheets4::gs4_auth(cache = ".secrets",
-#                         email = TRUE)
-# raster_variables <- googlesheets4::read_sheet("1CRwiTtRTyl_8zFSyrsn2oXizGTYY0QSNtyJ1H5nRQPg") %>%
-#   dplyr::filter(idr_app == "Y")
+googlesheets4::gs4_deauth()
+googlesheets4::gs4_auth(cache = ".secrets",
+                        email = TRUE)
+raster_variables <- googlesheets4::read_sheet("1CRwiTtRTyl_8zFSyrsn2oXizGTYY0QSNtyJ1H5nRQPg") %>%
+  dplyr::filter(idr_app == "Y")
 
-load("data/raster_variables.rda")
+# load("data/raster_variables.rda")
 
 raster_metric_options <- raster_variables %>%
   dplyr::select(text = english_name,

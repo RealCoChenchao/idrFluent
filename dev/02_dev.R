@@ -40,6 +40,9 @@ usethis::use_package("shinyWidgets")
 usethis::use_package("ggExtra")
 usethis::use_package("officer")
 usethis::use_package("writexl")
+usethis::use_package("rgdal")
+usethis::use_package("waiter")
+usethis::use_package("googlesheets4")
 usethis::use_dev_package("txModelUtils",
                          remote = "https://github.com/entropic-rumble/txModelUtils.git")
 usethis::use_dev_package("rcAppTools",

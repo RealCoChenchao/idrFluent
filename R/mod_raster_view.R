@@ -107,6 +107,12 @@ mod_raster_view_server <- function(id){
     annual_raster_manifest <- summary_raster_manifest("annual_demographic_raster/property_type")
     monthly_raster_manifest <- summary_raster_manifest("monthly_allsector_raster/property_type")
 
+    googlesheets4::gs4_deauth()
+    googlesheets4::gs4_auth(cache = ".secrets",
+                            email = TRUE)
+    raster_variables <- googlesheets4::read_sheet("1CRwiTtRTyl_8zFSyrsn2oXizGTYY0QSNtyJ1H5nRQPg") %>%
+      dplyr::filter(idr_app == "Y")
+
     observe({
       update_options <- raster_variables %>%
         dplyr::filter(property_type == input$sector) %>%
