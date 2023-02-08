@@ -179,15 +179,21 @@ sector_options <- list(
   list(key = "Parking", text = "Parking"))
 
 raster_sector_options <- list(
-  list(key = "multifamily", text = "Apartment"),
-  list(key = "industrial", text = "Industrial"),
-  list(key = "office", text = "Office"))
+  list(key = "Apartment", text = "Apartment"),
+  list(key = "Industrial", text = "Industrial"),
+  list(key = "Office", text = "Office"),
+  list(key = "Retail", text = "Retail"),
+  list(key = "Other", text = "Other"))
 
 googlesheets4::gs4_deauth()
 googlesheets4::gs4_auth(cache = ".secrets",
                         email = TRUE)
 raster_variables <- googlesheets4::read_sheet("1CRwiTtRTyl_8zFSyrsn2oXizGTYY0QSNtyJ1H5nRQPg") %>%
-  dplyr::filter(idr_app == "Y")
+  dplyr::filter(idr_app == "Y") %>%
+  dplyr::mutate(
+    property_type = ifelse(property_type == "multifamily",
+                           "Apartment",
+                           stringr::str_to_title(property_type)))
 
 # load("data/raster_variables.rda")
 

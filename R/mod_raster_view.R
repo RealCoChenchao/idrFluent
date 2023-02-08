@@ -111,11 +111,21 @@ mod_raster_view_server <- function(id){
     googlesheets4::gs4_auth(cache = ".secrets",
                             email = TRUE)
     raster_variables <- googlesheets4::read_sheet("1CRwiTtRTyl_8zFSyrsn2oXizGTYY0QSNtyJ1H5nRQPg") %>%
-      dplyr::filter(idr_app == "Y")
+      dplyr::filter(idr_app == "Y") %>%
+      dplyr::mutate(
+        property_type = ifelse(property_type == "multifamily",
+                               "Apartment",
+                               stringr::str_to_title(property_type)))
 
     observe({
+      selectedSector <- (
+        if (input$sector %in% c("Retail", "Other", "Apartment")) c("Apartment")
+        else if (length(input$sector) > 0) input$sector
+        else c("multifamily")
+      )
+
       update_options <- raster_variables %>%
-        dplyr::filter(property_type == input$sector) %>%
+        dplyr::filter(property_type == selectedSector) %>%
         dplyr::select(text = english_name,
                       key = variable_name) %>%
         jsonlite::toJSON(dataframe = "rows")
@@ -134,7 +144,8 @@ mod_raster_view_server <- function(id){
       )
 
       selectedSector <- (
-        if (length(input$sector) > 0) input$sector
+        if (input$sector %in% c("Retail", "Other", "Apartment")) c("multifamily")
+        else if (length(input$sector) > 0) stringr::str_to_lower(input$sector)
         else c("multifamily")
       )
 
@@ -206,20 +217,21 @@ mod_raster_view_server <- function(id){
       }else{
         rcAppTools::plot_raster(selected_raster(), selectedPercentile) %>%
           addPortfolioMarkers(df = filtered_property(),
-                              selected_sector = "Office",
-                              cluster_option = input$clusterOnly) %>%
-          addPortfolioMarkers(df = filtered_property(),
-                              selected_sector = "Industrial",
-                              cluster_option = input$clusterOnly) %>%
-          addPortfolioMarkers(df = filtered_property(),
-                              selected_sector = "Retail",
-                              cluster_option = input$clusterOnly) %>%
-          addPortfolioMarkers(df = filtered_property(),
-                              selected_sector = "Apartment",
-                              cluster_option = input$clusterOnly) %>%
-          addPortfolioMarkers(df = filtered_property(),
-                              selected_sector = "Other",
+                              selected_sector = input$sector,
                               cluster_option = input$clusterOnly)
+        # %>%
+        #   addPortfolioMarkers(df = filtered_property(),
+        #                       selected_sector = "Industrial",
+        #                       cluster_option = input$clusterOnly) %>%
+        #   addPortfolioMarkers(df = filtered_property(),
+        #                       selected_sector = "Retail",
+        #                       cluster_option = input$clusterOnly) %>%
+        #   addPortfolioMarkers(df = filtered_property(),
+        #                       selected_sector = "Apartment",
+        #                       cluster_option = input$clusterOnly) %>%
+        #   addPortfolioMarkers(df = filtered_property(),
+        #                       selected_sector = "Other",
+        #                       cluster_option = input$clusterOnly)
       }
 
     })
